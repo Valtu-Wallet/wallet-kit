@@ -9,6 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         node: ["18.17", "20", "22"]
     steps:
@@ -16,8 +17,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
-      - run: corepack enable && pnpm install --frozen-lockfile
-      - run: pnpm run build
+      # pnpm 9 runs on every Node version below and reads this lockfile.
+      - run: npx --yes pnpm@9 install --frozen-lockfile
+      - run: npm run build
       - name: The package loads and its helpers work
         run: |
           node --input-type=module -e '

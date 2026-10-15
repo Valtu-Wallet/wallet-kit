@@ -1,0 +1,30 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: ["18.17", "20", "22"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - run: corepack enable && pnpm install --frozen-lockfile
+      - run: pnpm run build
+      - name: The package loads and its helpers work
+        run: |
+          node --input-type=module -e '
+            import { toBaseUnits, fromBaseUnits, generateApiKey, verifyWebhook } from "./dist/index.js";
+            if (toBaseUnits("25.5", 6) !== "25500000") throw new Error("toBaseUnits");
+            if (fromBaseUnits("25500000", 6) !== "25.5") throw new Error("fromBaseUnits");
+            const k = generateApiKey(); if (!k.publicKey || !k.privateKey) throw new Error("generateApiKey");
+            if (verifyWebhook("{}", "t=1,v1=00", "s")) throw new Error("verifyWebhook accepted a bad signature");
+            console.log("ok");'
+      - run: node dist/cli.js | head -3

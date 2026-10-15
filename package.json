@@ -1,0 +1,60 @@
+{
+  "name": "@valtu/wallet-kit",
+  "version": "0.8.0",
+  "description": "Valtu Wallet SDK for servers: signed API client, webhook verification, amount helpers. Zero dependencies.",
+  "license": "MIT",
+  "homepage": "https://valtu.io/docs/wallet-kit",
+  "bugs": {
+    "url": "https://valtu.io/contact"
+  },
+  "author": "Valtu (https://valtu.io)",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "valtu-wallet-kit": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18.17"
+  },
+  "sideEffects": false,
+  "keywords": [
+    "valtu",
+    "wallet",
+    "custody",
+    "crypto",
+    "payments",
+    "stablecoin",
+    "usdt",
+    "usdc",
+    "tron",
+    "ethereum",
+    "bitcoin",
+    "webhooks",
+    "sdk"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepublishOnly": "npm run build",
+    "pack:site": "sh build.sh"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "~5.9.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

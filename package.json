@@ -1,11 +1,15 @@
 {
   "name": "@valtu/wallet-kit",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Valtu Wallet SDK for servers: signed API client, webhook verification, amount helpers. Zero dependencies.",
   "license": "MIT",
   "homepage": "https://valtu.io/docs/wallet-kit",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Valtu-Wallet/wallet-kit.git"
+  },
   "bugs": {
-    "url": "https://valtu.io/contact"
+    "url": "https://github.com/Valtu-Wallet/wallet-kit/issues"
   },
   "author": "Valtu (https://valtu.io)",
   "type": "module",

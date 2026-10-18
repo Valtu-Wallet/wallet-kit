@@ -24,7 +24,15 @@ export interface Wallet {
   addresses: WalletAddress[];
 }
 
-export type DepositStatus = "PENDING" | "CONFIRMED" | "ORPHANED";
+/** NEEDS_REVIEW: the deposit was CONFIRMED, then its block left the chain (rare); a person should look. */
+export type DepositStatus = "PENDING" | "CONFIRMED" | "ORPHANED" | "NEEDS_REVIEW";
+
+/**
+ * Know Your Transaction screening, when it's turned on: pending (being checked), clear, held (for
+ * your team's decision), released or rejected (the decision), allowed (no answer from the provider,
+ * let through by your fallback). Null: not screened.
+ */
+export type ScreeningStatus = "pending" | "clear" | "held" | "released" | "rejected" | "allowed";
 
 export interface Deposit {
   id: string;
@@ -45,6 +53,8 @@ export interface Deposit {
   blockNumber: string;
   confirmations: number;
   status: DepositStatus;
+  /** Credit only when this is null, "clear", "released" or "allowed". */
+  screening: ScreeningStatus | null;
   createdAt: string;
   confirmedAt: string | null;
 }
@@ -88,6 +98,8 @@ export interface Transfer {
   approvalGroupName: string | null;
   /** Which of your policies decided the approvals, if one did. */
   policyReason: string | null;
+  /** A held payout isn't signed until your team releases it. */
+  screening: ScreeningStatus | null;
   approvalCount: number | null;
   proposedBy: string;
   proposerName: string | null;
@@ -502,6 +514,27 @@ export type CheckoutEvent = EventBase<
   }
 >;
 
+export type ScreeningEvent = EventBase<
+  "screening.flagged" | "screening.allowed" | "screening.released" | "screening.rejected",
+  {
+    screeningId: string;
+    /** A payout ("withdrawal") or a deposit. */
+    direction: "withdrawal" | "deposit";
+    transferId: string | null;
+    depositId: string | null;
+    chain: string;
+    asset: string | null;
+    /** The payout's destination, or the deposit's sender. */
+    address: string | null;
+    provider: "elliptic" | "chainalysis" | "blockaid" | "webacy";
+    status: ScreeningStatus;
+    risk: "low" | "medium" | "high" | "severe" | null;
+    reasons: string[];
+    /** Why there's no result: provider error, timeout, chain not covered. */
+    failure: string | null;
+  }
+>;
+
 export type MessageEvent = EventBase<
   "message.pending_approval" | "message.signed" | "message.rejected" | "message.expired" | "message.failed",
   { id: string; externalId: string | null; walletId?: string; type?: MessageType; signature?: string; error?: string | null }
@@ -518,4 +551,5 @@ export type WebhookEvent =
   | WorkspaceEvent
   | CheckoutEvent
   | MessageEvent
+  | ScreeningEvent
   | TestEvent;

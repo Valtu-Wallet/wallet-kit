@@ -38,7 +38,7 @@ import {
 } from "./types.ts";
 
 export const DEFAULT_BASE_URL = "https://valtu.io";
-const VERSION = "0.8.1";
+const VERSION = "0.8.2";
 
 export interface ValtuOptions {
   /** Your API private key (64 hex characters), from the key file the dashboard gave you. */
